@@ -14,6 +14,7 @@
         - ca-certificates
         - curl
         - software-properties-common
+        - unzip
         
     - name: Add Docker GPG key
       apt_key:
