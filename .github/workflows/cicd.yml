@@ -70,7 +70,7 @@ jobs:
           fi
 
           # Navigate to the Docker directory
-          cd app/Docker/
+          cd app/myapp/
           
           # Build the Docker image locally with no cache to ensure it's up-to-date
           docker build --no-cache -t nextjs-app .
