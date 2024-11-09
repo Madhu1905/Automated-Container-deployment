@@ -35,8 +35,7 @@ jobs:
         
     # Step 5: Copy Docker image tar to Azure VM using SCP
     - name: Copy your source code to Azure VM
-      run: |
-        scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
+      run: scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
 
     # Step 6: SSH into the Azure VM and load the Docker image
     - name: SSH into Azure VM and deploy container
