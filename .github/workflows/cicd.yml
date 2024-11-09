@@ -38,7 +38,7 @@ jobs:
       run: scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
 
     - name: Deploy using SCP
-      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./dist/* ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}: ~/node-app
+      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./dist/* ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:~/node-app
 
     # Step 6: SSH into the Azure VM and load the Docker image
     - name: SSH into Azure VM and deploy container
