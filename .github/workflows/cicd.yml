@@ -19,6 +19,11 @@ jobs:
       run: |
         zip -r acd.zip ./*
         ls -la
+    # Step 3: Save the SSH private key to a file
+    - name: Add SSH Key
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
+        chmod 600 ssh_key.pem
 
     # - name: SSH into Azure VM and deploy container
     #   uses: appleboy/ssh-action@v0.1.7
@@ -34,7 +39,7 @@ jobs:
     #   run: scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
 
     - name: Deploy using SCP
-      run: scp -o StrictHostKeyChecking=no -i id_rsa.pem acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
+      run: scp -o StrictHostKeyChecking=no -i ssh_key.pem acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
 
     # Step 6: SSH into the Azure VM and load the Docker image
     - name: SSH into Azure VM and deploy container
