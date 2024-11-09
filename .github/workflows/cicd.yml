@@ -34,8 +34,8 @@ jobs:
     #     target: "~/"
         
     # Step 5: Copy Docker image tar to Azure VM using SCP
-    - name: Copy your source code to Azure VM
-      run: scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
+    # - name: Copy your source code to Azure VM
+    #   run: scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
 
     - name: Deploy using SCP
       run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./dist/* ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:~/node-app
