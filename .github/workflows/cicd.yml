@@ -42,8 +42,8 @@ jobs:
         port: 22
         script: |
           # Extract the application files
-          unzip acd.zip -d ~/app
-          cd ~/app/docker/
+          unzip /home/${{ vars.AZURE_VM_USERNAME }}/acd.zip -d ~/app
+          cd ~/app/Docker/
           
           # Build the Docker image locally
           docker build -t nextjs-app .
