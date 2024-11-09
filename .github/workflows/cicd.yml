@@ -42,6 +42,9 @@ jobs:
         script: |
           # Navigate to the user's home directory
           cd /home/${{ vars.AZURE_VM_USERNAME }}
+
+          # Remove old acd.zip and app folder if they exist
+          rm -rf acd.zip app
           
           # Unzip the compressed file into the target directory
           unzip -o acd.zip -d app
@@ -49,10 +52,10 @@ jobs:
           # Navigate to the Docker directory
           cd app/docker/
           
-          # Build the Docker image locally
-          docker build -t nextjs-app .
-          
-          # Stop and remove any existing container (optional)
+          # Build the Docker image locally with no cache to ensure it's up-to-date
+          docker build --no-cache -t nextjs-app .
+
+          # Stop and remove any existing container
           docker stop nextjs-container || true
           docker rm nextjs-container || true
           
