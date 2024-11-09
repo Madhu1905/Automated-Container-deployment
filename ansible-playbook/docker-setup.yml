@@ -35,3 +35,15 @@
       systemd:
         name: docker
         enabled: yes
+
+    - name: Add SSH user to Docker group
+      user:
+        name: "adminuser"
+        groups: docker
+        append: yes
+        state: present
+
+    - name: Restart Docker to apply group changes
+      systemd:
+        name: docker
+        state: restarted
