@@ -60,8 +60,5 @@ jobs:
           # Run the Docker container
           docker run -d --name nextjs-container -p 3000:3000 nextjs-app
 
-          # Run the Docker container on the VM
-          docker run -d --name acd-app -p 80:8080 myapp:latest
-
           # Optionally restart or perform additional tasks
-          echo "Docker container deployed successfully"
+          echo "Docker container deployed successfully access your application at https://${{ env.AZURE_VM_IP }}:3000"
