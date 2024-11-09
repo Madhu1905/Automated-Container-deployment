@@ -8,46 +8,57 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    env:
+      AZURE_VM_USERNAME: "adminuser"
+      AZURE_VM_IP: "52.233.168.114"
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
     steps:
     # Step 1: Checkout the code
     - name: Checkout code
       uses: actions/checkout@v4.2.2
 
-    # Step 2: Set up Docker
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3.7.1
+    # Step 2: Compress the code
+    - name: Compress project files
+      run: zip -r acd.zip ./*
 
-    # Step 3: Build the Docker Image
-    - name: Build Docker image
-      working-directory: Docker
-      run: |
-        docker build -t myapp:latest .
-        docker images
-
-    # Step 4: Save Docker Image to tar file
-    - name: Save Docker image to tar file
-      working-directory: Docker
-      run: |
-        docker save myapp:latest -o myapp.tar
-
-    # Step 5: Copy Docker image tar to Azure VM using SCP
-    - name: Copy Docker image to Azure VM
-      working-directory: Docker
-      run: |
-        scp -o StrictHostKeyChecking=no -i ${{ vars.SSH_PRIVATE_KEY }} myapp.tar ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
+    - name: SSH into Azure VM and deploy container
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ env.AZURE_VM_IP }}
+        username: ${{ env.AZURE_VM_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "acd.zip"
+        target: "~/"
+        
+    # # Step 5: Copy Docker image tar to Azure VM using SCP
+    # - name: Copy Docker image to Azure VM
+    #   working-directory: Docker
+    #   run: |
+    #     scp -o StrictHostKeyChecking=no -i ${{ vars.SSH_PRIVATE_KEY }} myapp.tar ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
 
     # Step 6: SSH into the Azure VM and load the Docker image
     - name: SSH into Azure VM and deploy container
-      uses: appleboy/ssh-action@v0.1.6
+      uses: appleboy/ssh-action@v0.1.7
       with:
-        host: 52.233.168.114
-        username: "adminuser"
-        key: ${{ vars.SSH_PRIVATE_KEY }}
+        host: ${{ env.AZURE_VM_IP }}
+        username: ${{ env.AZURE_VM_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
-          # Load the Docker image on the VM
-          docker load -i /home/${{ vars.AZURE_VM_USERNAME }}/myapp.tar
+          # Extract the application files
+          unzip acd.zip -d ~/app
+          cd ~/app/docker/
+          
+          # Build the Docker image locally
+          docker build -t nextjs-app .
+          
+          # Stop and remove any existing container (optional)
+          docker stop nextjs-container || true
+          docker rm nextjs-container || true
+          
+          # Run the Docker container
+          docker run -d --name nextjs-container -p 3000:3000 nextjs-app
 
           # Run the Docker container on the VM
           docker run -d --name acd-app -p 80:8080 myapp:latest
