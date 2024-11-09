@@ -25,30 +25,32 @@ jobs:
         docker build -t myapp:latest .
         docker images
 
-    # # Step 4: Save Docker Image to tar file
-    # - name: Save Docker image to tar file
-    #   run: |
-    #     docker save myapp:latest -o myapp.tar
+    # Step 4: Save Docker Image to tar file
+    - name: Save Docker image to tar file
+      working-directory: Docker
+      run: |
+        docker save myapp:latest -o myapp.tar
 
-    # # Step 5: Copy Docker image tar to Azure VM using SCP
-    # - name: Copy Docker image to Azure VM
-    #   run: |
-    #     scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} myapp.tar ${{ secrets.AZURE_VM_USERNAME }}@${{ secrets.AZURE_VM_IP }}:/home/${{ secrets.AZURE_VM_USERNAME }}/
+    # Step 5: Copy Docker image tar to Azure VM using SCP
+    - name: Copy Docker image to Azure VM
+      working-directory: Docker
+      run: |
+        scp -o StrictHostKeyChecking=no -i ${{ vars.SSH_PRIVATE_KEY }} myapp.tar ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
 
-    # # Step 6: SSH into the Azure VM and load the Docker image
-    # - name: SSH into Azure VM and deploy container
-    #   uses: appleboy/ssh-action@v0.1.6
-    #   with:
-    #     host: ${{ secrets.AZURE_VM_IP }}
-    #     username: ${{ secrets.AZURE_VM_USERNAME }}
-    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     port: 22
-    #     script: |
-    #       # Load the Docker image on the VM
-    #       docker load -i /home/${{ secrets.AZURE_VM_USERNAME }}/myapp.tar
+    # Step 6: SSH into the Azure VM and load the Docker image
+    - name: SSH into Azure VM and deploy container
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: 52.233.168.114
+        username: "adminuser"
+        key: ${{ vars.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          # Load the Docker image on the VM
+          docker load -i /home/${{ vars.AZURE_VM_USERNAME }}/myapp.tar
 
-    #       # Run the Docker container on the VM
-    #       docker run -d --name acd-app -p 80:3000 myapp:latest
+          # Run the Docker container on the VM
+          docker run -d --name acd-app -p 80:8080 myapp:latest
 
-    #       # Optionally restart or perform additional tasks
-    #       echo "Docker container deployed successfully"
+          # Optionally restart or perform additional tasks
+          echo "Docker container deployed successfully"
