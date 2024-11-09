@@ -31,6 +31,11 @@ jobs:
       run: |
         scp -o StrictHostKeyChecking=no -i ssh_key.pem acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
 
+    # - name: SSH to Azure VM
+    #   run: |
+    #     ssh -o StrictHostKeyChecking=no -i ssh_key.pem ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}
+
+
     # Step 5: SSH into the Azure VM and deploy the Docker container
     - name: SSH into Azure VM and deploy container
       uses: appleboy/ssh-action@v0.1.7
@@ -54,6 +59,15 @@ jobs:
 
           # Unzip into a new directory
           unzip -o acd.zip -d app
+
+          # Verify that the unzipped files are present
+          if [ -d "app" ]; then
+            echo "Unzip successful. Listing contents of 'app' directory:"
+            ls -la app
+          else
+            echo "Unzip failed or 'app' directory does not exist."
+            exit 1
+          fi
 
           # Navigate to the Docker directory
           cd app/docker/
