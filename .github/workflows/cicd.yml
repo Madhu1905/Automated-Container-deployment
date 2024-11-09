@@ -25,7 +25,7 @@ jobs:
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
         chmod 600 ssh_key.pem
-        
+
     # Step 4: Copy the compressed file to the Azure VM using SCP
     - name: Copy compressed source code to Azure VM
       run: |
@@ -43,10 +43,16 @@ jobs:
           # Navigate to the user's home directory
           cd /home/${{ vars.AZURE_VM_USERNAME }}
 
-          # Remove old acd.zip and app folder if they exist
-          rm -rf acd.zip app
-          
-          # Unzip the compressed file into the target directory
+          # Verify the acd.zip file exists
+          if [ ! -f "acd.zip" ]; then
+            echo "File acd.zip was not copied successfully."
+            exit 1
+          fi
+
+          # Remove the old app directory if it exists
+          rm -rf app
+
+          # Unzip into a new directory
           unzip -o acd.zip -d app
 
           # Navigate to the Docker directory
