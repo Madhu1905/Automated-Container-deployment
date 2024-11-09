@@ -24,15 +24,6 @@ jobs:
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
         chmod 600 ssh_key.pem
-
-    # - name: SSH into Azure VM and deploy container
-    #   uses: appleboy/ssh-action@v0.1.7
-    #   with:
-    #     host: ${{ env.AZURE_VM_IP }}
-    #     username: ${{ env.AZURE_VM_USERNAME }}
-    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     source: "acd.zip"
-    #     target: "~/"
         
     # Step 5: Copy Docker image tar to Azure VM using SCP
     # - name: Copy your source code to Azure VM
@@ -45,8 +36,8 @@ jobs:
     - name: SSH into Azure VM and deploy container
       uses: appleboy/ssh-action@v0.1.7
       with:
-        host: ${{ env.AZURE_VM_IP }}
-        username: ${{ env.AZURE_VM_USERNAME }}
+        host: ${{ vars.AZURE_VM_IP }}
+        username: ${{ vars.AZURE_VM_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
