@@ -20,22 +20,23 @@ jobs:
 
     # Step 2: Compress the code
     - name: Compress project files
-      run: zip -r acd.zip ./*
+      run: |
+        zip -r acd.zip ./*
+        ls -la
 
-    - name: SSH into Azure VM and deploy container
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ env.AZURE_VM_IP }}
-        username: ${{ env.AZURE_VM_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "acd.zip"
-        target: "~/"
+    # - name: SSH into Azure VM and deploy container
+    #   uses: appleboy/ssh-action@v0.1.7
+    #   with:
+    #     host: ${{ env.AZURE_VM_IP }}
+    #     username: ${{ env.AZURE_VM_USERNAME }}
+    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     source: "acd.zip"
+    #     target: "~/"
         
-    # # Step 5: Copy Docker image tar to Azure VM using SCP
-    # - name: Copy Docker image to Azure VM
-    #   working-directory: Docker
-    #   run: |
-    #     scp -o StrictHostKeyChecking=no -i ${{ vars.SSH_PRIVATE_KEY }} myapp.tar ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
+    # Step 5: Copy Docker image tar to Azure VM using SCP
+    - name: Copy your source code to Azure VM
+      run: |
+        scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
 
     # Step 6: SSH into the Azure VM and load the Docker image
     - name: SSH into Azure VM and deploy container
