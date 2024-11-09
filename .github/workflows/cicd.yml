@@ -56,4 +56,4 @@ jobs:
           docker run -d --name nextjs-container -p 3000:3000 nextjs-app
 
           # Optionally restart or perform additional tasks
-          echo "Docker container deployed successfully access your application at https://${{ env.AZURE_VM_IP }}:3000"
+          echo "Docker container deployed successfully access your application at https://${{ vars.AZURE_VM_IP }}:3000"
