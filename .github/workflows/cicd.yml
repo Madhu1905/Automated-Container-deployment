@@ -76,9 +76,9 @@ jobs:
           docker rm nextjs-container || true
           
           # Run the Docker container
-          docker run -d --name nextjs-container -p 3000:3000 nextjs-app
+          docker run -d --name nextjs-container -p 8080:80 nextjs-app
 
-          echo "Docker container deployed successfully. Access your application at http://${{ vars.AZURE_VM_IP }}:3000"
+          echo "Docker container deployed successfully. Access your application at http://${{ vars.AZURE_VM_IP }}:8080"
 
     # Step 6: Clean up by removing the SSH key file
     - name: Clean up
