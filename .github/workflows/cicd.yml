@@ -3,36 +3,30 @@ name: Build and Deploy to Azure VM
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to main (or your desired branch)
+      - main  
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the code
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Step 2: Compress the code
     - name: Compress project files
       run: |
         zip -r acd.zip ./*
         ls -la
 
-    # Step 3: Save the SSH private key to a file
     - name: Add SSH Key
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
         chmod 600 ssh_key.pem
 
-    # Step 4: Copy the compressed file to the Azure VM using SCP
     - name: Copy compressed source code to Azure VM
       run: |
         scp -o StrictHostKeyChecking=no -i ssh_key.pem acd.zip ${{ vars.AZURE_VM_USERNAME }}@${{ vars.AZURE_VM_IP }}:/home/${{ vars.AZURE_VM_USERNAME }}/
 
-
-    # Step 5: SSH into the Azure VM and deploy the Docker container
     - name: SSH into Azure VM and deploy container
       uses: appleboy/ssh-action@v0.1.7
       with:
@@ -80,7 +74,6 @@ jobs:
 
           echo "Docker container deployed successfully. Access your application at http://${{ vars.AZURE_VM_IP }}:8080"
 
-    # Step 6: Clean up by removing the SSH key file
     - name: Clean up
       run: |
         rm ssh_key.pem
